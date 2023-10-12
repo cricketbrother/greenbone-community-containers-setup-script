@@ -4,36 +4,39 @@ set -e
 
 echo "此脚本适用于Ubuntu 22.04，未在其他系统上测试"
 
-echo "检查当前用户"
-if [ "$EUID" -ne 0 ]; then
-  echo "此脚本需要以root用户身份运行，请使用sudo或以root用户登录"
-  exit 1
+echo "检查当前用户是否为普通用户"
+if [ "$EUID" -eq 0 ]; then
+    echo "请使用普通用户运行此脚本"
+    exit 1
 fi
 
 echo "更新系统"
-apt update
-apt full-upgrade -y
+sudo apt update
+sudo apt full-upgrade -y
 
 echo "安装依赖"
-apt install ca-certificates curl gnupg
+sudo apt install ca-certificates curl gnupg
 
 echo "安装docker"
 for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt remove $pkg; done
-curl -s https://get.docker.com/ | sh
+if ! [ -x "$(command -v docker)" ]; then
+    curl -s https://get.docker.com/ | sh
+fi
+systemctl enable docker
 systemctl start docker
 
 echo "将当前用户添加到docker组并为当前shell环境应用组更改"
-usermod -aG docker $USER && su $USER
+sudo usermod -aG docker $USER && su $USER
 
 echo "创建下载目录"
 dowload_dir="/opt/greenbone-community-container"
-mkdir -p $dowload_dir
+sudo mkdir -p $dowload_dir
 
 echo "下载docker-compose.yml"
-cd $dowload_dir && curl -f -L https://greenbone.github.io/docs/latest/_static/docker-compose-22.4.yml -o docker-compose.yml
+cd $dowload_dir && sudo curl -f -L https://greenbone.github.io/docs/latest/_static/docker-compose-22.4.yml -o docker-compose.yml
 
 echo "替换GSA监听地址"
-sed -i 's/127.0.0.1:9392:80/0.0.0.0:9392:80/g' docker-compose.yml
+sudo sed -i 's/127.0.0.1:9392:80/0.0.0.0:9392:80/g' docker-compose.yml
 
 echo "拉取Greenbone Community Containers镜像"
 docker compose -f docker-compose.yml -p greenbone-community-edition pull
