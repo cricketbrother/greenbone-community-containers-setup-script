@@ -18,7 +18,7 @@ echo "安装依赖"
 sudo apt install ca-certificates curl gnupg
 
 echo "安装docker"
-for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt remove $pkg; done
+for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt remove $pkg; done
 if ! [ -x "$(command -v docker)" ]; then
     curl -s https://get.docker.com/ | sh
 fi
