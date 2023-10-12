@@ -11,14 +11,14 @@ if [ "$EUID" -eq 0 ]; then
 fi
 
 echo "更新系统"
-sudo apt update
-sudo apt full-upgrade -y
+sudo apt update -q
+sudo apt full-upgrade -y -q
 
 echo "安装依赖"
-sudo apt install ca-certificates curl gnupg
+sudo apt install ca-certificates curl gnupg -q
 
 echo "安装docker"
-for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt remove $pkg; done
+for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt remove $pkg -q; done
 if ! [ -x "$(command -v docker)" ]; then
     curl -s https://get.docker.com/ | sh
 fi
