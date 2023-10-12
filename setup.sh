@@ -22,8 +22,8 @@ for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do
 if ! [ -x "$(command -v docker)" ]; then
     curl -s https://get.docker.com/ | sh
 fi
-systemctl enable docker
-systemctl start docker
+sudo systemctl enable docker
+sudo systemctl start docker
 
 echo "将当前用户添加到docker组并为当前shell环境应用组更改"
 sudo usermod -aG docker $USER && su $USER
