@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 echo "此脚本适用于Ubuntu 22.04，未在其他系统上测试"
 
 echo "检查当前用户是否为普通用户"
